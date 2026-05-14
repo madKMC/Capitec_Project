@@ -1,4 +1,3 @@
-/* Base styles */
 .navigation {
 	position: fixed;
 	background: #111;
@@ -7,7 +6,6 @@
 	z-index: 1000;
 }
 
-/* Navigation items */
 .navigation a {
 	color: white;
 	text-decoration: none;
@@ -18,7 +16,7 @@
     background: #333;
 }
 
-/* MOBILE */
+/* Mobile */
 @media (max-width: 767px) {
 	.navigation {
 		bottom: 0;
@@ -46,13 +44,6 @@
 		display: flex;
 		flex-direction: row;
 	}
-
-    .Navigation-Links {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-around;
-        width: 100%;
-    }
 }
 
 /* DESKTOP */
@@ -82,9 +73,4 @@
 	.Mobile-Nav {
 		display: none;
 	}
-
-    .Navigation-Links {
-        display: flex;
-        flex-direction: column;
-    }
 }
