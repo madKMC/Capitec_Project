@@ -1,0 +1,37 @@
+.dashboard {
+	padding: 1.5rem;
+	color: var(--text);
+}
+
+.dashboard-title {
+	margin-bottom: 1rem;
+	font-size: clamp(1.25rem, 2vw, 1.75rem);
+	font-weight: 700;
+	color: var(--text);
+}
+
+.summary-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 1rem;
+	width: 100%;
+}
+
+.state {
+	padding: 1rem;
+	border: 1px solid var(--border);
+	background: var(--panel);
+	border-radius: 12px;
+	color: var(--text);
+}
+
+.state.error {
+	border-color: var(--danger, #ef4444);
+	color: var(--danger, #ef4444);
+}
+
+@media (max-width: 768px) {
+	.summary-grid {
+		grid-template-columns: 1fr;
+	}
+}

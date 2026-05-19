@@ -1,5 +1,21 @@
 .App {
-    display: flex;
-    flex-direction: column;
-    
+	display: flex;
+	flex-direction: column;
+}
+
+body {
+	height: 100vh;
+	margin: 0;
+	background: radial-gradient(
+		1200px circle at 20% 10%,
+		var(--bg) 0%,
+		var(--panel) 100%
+	);
+	color: var(--text);
+	font-family:
+		system-ui,
+		-apple-system,
+		Segoe UI,
+		Roboto,
+		sans-serif;
 }

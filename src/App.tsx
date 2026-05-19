@@ -6,32 +6,34 @@ import Dashboard from './pages/Dashboard';
 import Transactions from './pages/Transactions';
 import Categories from './pages/Categories';
 import Trends from './pages/Trends';
-import Budgets from './pages/Budgets';
 import Profile from './pages/Profile';
-import Settings from './pages/Settings';
-import Theme from './pages/Theme';
+import { AuthProvider } from './context/auth/AuthProvider';
+import SpendingGoals from './pages/Goals';
+import { ThemeProvider } from './context/theme/ThemeProvider';
 
 function App() {
 	return (
-		<Router>
-			<div className='App'>
-				<Navigation></Navigation>
+		<AuthProvider>
+			<ThemeProvider>
+				<Router>
+					<div className='App'>
+						<Navigation></Navigation>
 
-				<main className='main-content'>
-					<Header></Header>
-					<Routes>
-						<Route path='/' Component={Dashboard} />
-						<Route path='/transactions' Component={Transactions} />
-						<Route path='/categories' Component={Categories} />
-						<Route path='/trends' Component={Trends} />
-						<Route path='/budgets' Component={Budgets} />
-						<Route path='/profile' Component={Profile} />
-						<Route path='/settings' Component={Settings} />
-						<Route path='/theme' Component={Theme} />
-					</Routes>
-				</main>
-			</div>
-		</Router>
+						<main className='main-content'>
+							<Header></Header>
+							<Routes>
+								<Route path='/' Component={Dashboard} />
+								<Route path='/transactions' Component={Transactions} />
+								<Route path='/categories' Component={Categories} />
+								<Route path='/trends' Component={Trends} />
+								<Route path='/goals' Component={SpendingGoals} />
+								<Route path='/profile' Component={Profile} />
+							</Routes>
+						</main>
+					</div>
+				</Router>
+			</ThemeProvider>
+		</AuthProvider>
 	);
 }
 
