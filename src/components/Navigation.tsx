@@ -8,14 +8,12 @@ const Navigation = () => {
 				<div className='navigation-logo'>CSID</div>
                 <NavLink to='/'>Dashboard</NavLink>
                 <NavLink to='/transactions'>Transactions</NavLink>
-				<NavLink to='/trends'>Trends</NavLink>
 				<NavLink to='/goals'>Goals</NavLink>
 			</div>
 
 			<div className='mobile-nav'>
                 <NavLink to='/' >Dashboard</NavLink>
                 <NavLink to='/transactions'>Transactions</NavLink>
-				<NavLink to='/trends'>Trends</NavLink>
 				<NavLink to='/goals'>Goals</NavLink>
 			</div>
 		</nav>

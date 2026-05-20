@@ -4,6 +4,7 @@ import SummaryCard from '../components/SummaryCard';
 import './CSS/Dashboard.css';
 import { useAuth } from '../context/auth/useAuth';
 import CategoryChart from '../components/CategoryChart';
+import TrendChart from '../components/TrendChart';
 
 interface SpendingSummary {
 	period: string;
@@ -26,11 +27,19 @@ type Category = {
 	icon: string;
 };
 
+type Trend = {
+	month: string;
+	totalSpent: number;
+	transactionCount: number;
+	averageTransaction: number;
+};
+
 const Dashboard = () => {
 	const { user } = useAuth();
 
 	const [summary, setSummary] = useState<SpendingSummary | null>(null);
 	const [categories, setCategories] = useState<Category[] | null>(null);
+	const [trends, setTrends] = useState<Trend[] | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
@@ -50,9 +59,14 @@ const Dashboard = () => {
 					`/api/customers/${customerId}/spending/categories?`,
 				);
 
+				const trendsData = await apiFetch(
+					`/api/customers/${customerId}/spending/trends`
+				);
+
 				if (mounted) {
 					setSummary(summaryData);
 					setCategories(categoryData.categories);
+					setTrends(trendsData.trends);
 				}
 			} catch (err: unknown) {
 				if (mounted) {
@@ -99,7 +113,13 @@ const Dashboard = () => {
 							title='Average Transaction'
 							value={`R${summary.averageTransaction}`}
 						/>
-						{categories && <CategoryChart categories={categories} />}
+						
+					</section>
+					<section className='chart-section'>
+						{categories && (
+							<CategoryChart categories={categories} />
+						)}
+						{trends && <TrendChart trends={trends} />}
 					</section>
 				</>
 			)}

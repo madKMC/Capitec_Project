@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { apiFetch } from '../api/client';
-import './CSS/Trends.css';
 import { useAuth } from '../context/auth/useAuth';
 
 type Trend = {

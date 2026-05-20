@@ -3,6 +3,32 @@
 	border: 1px solid var(--border);
 	border-radius: 16px;
 	padding: 1.25rem;
+	display: flex;
+	flex-direction: column;
+}
+
+.chart-body {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+}
+
+@media (min-width: 768px) {
+	.chart-body {
+		flex-direction: row;
+		align-items: center;
+		gap: 1.5rem;
+	}
+
+	.chart-wrapper {
+		flex: 0 0 320px;
+		height: 320px;
+	}
+
+	.category-legend {
+		flex: 1;
+		margin-top: 0;
+	}
 }
 
 .chart-title {
@@ -10,6 +36,9 @@
 	color: var(--text);
 	font-size: 1rem;
 	font-weight: 600;
+	width: 100%;
+	letter-spacing: 0.3px;
+	text-align: center;
 }
 
 .chart-wrapper {
@@ -38,11 +67,7 @@
 
 .legend-item:hover,
 .legend-item.active {
-	background: color-mix(
-		in srgb,
-		var(--accent) 10%,
-		transparent
-	);
+	background: color-mix(in srgb, var(--accent) 10%, transparent);
 }
 
 .legend-left {

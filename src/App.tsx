@@ -4,7 +4,6 @@ import Navigation from './components/Navigation';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import Transactions from './pages/Transactions';
-import Trends from './pages/Trends';
 import Profile from './pages/Profile';
 import { AuthProvider } from './context/auth/AuthProvider';
 import SpendingGoals from './pages/Goals';
@@ -23,7 +22,6 @@ function App() {
 							<Routes>
 								<Route path='/' Component={Dashboard} />
 								<Route path='/transactions' Component={Transactions} />
-								<Route path='/trends' Component={Trends} />
 								<Route path='/goals' Component={SpendingGoals} />
 								<Route path='/profile' Component={Profile} />
 							</Routes>
