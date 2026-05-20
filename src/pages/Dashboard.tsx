@@ -3,6 +3,7 @@ import { apiFetch } from '../api/client';
 import SummaryCard from '../components/SummaryCard';
 import './CSS/Dashboard.css';
 import { useAuth } from '../context/auth/useAuth';
+import CategoryChart from '../components/CategoryChart';
 
 interface SpendingSummary {
 	period: string;
@@ -16,10 +17,20 @@ interface SpendingSummary {
 	};
 }
 
+type Category = {
+	name: string;
+	amount: number;
+	percentage: number;
+	transactionCount: number;
+	color: string;
+	icon: string;
+};
+
 const Dashboard = () => {
 	const { user } = useAuth();
 
 	const [summary, setSummary] = useState<SpendingSummary | null>(null);
+	const [categories, setCategories] = useState<Category[] | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
@@ -35,9 +46,13 @@ const Dashboard = () => {
 				const summaryData = await apiFetch(
 					`/api/customers/${customerId}/spending/summary`,
 				);
+				const categoryData = await apiFetch(
+					`/api/customers/${customerId}/spending/categories?`,
+				);
 
 				if (mounted) {
 					setSummary(summaryData);
+					setCategories(categoryData.categories);
 				}
 			} catch (err: unknown) {
 				if (mounted) {
@@ -84,6 +99,7 @@ const Dashboard = () => {
 							title='Average Transaction'
 							value={`R${summary.averageTransaction}`}
 						/>
+						{categories && <CategoryChart categories={categories} />}
 					</section>
 				</>
 			)}
