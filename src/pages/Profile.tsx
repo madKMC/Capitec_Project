@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 import { apiFetch } from '../api/client';
 import './CSS/Profile.css';
 import { useAuth } from '../context/auth/useAuth';
+import { FaUserCircle } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+import { FaArrowLeft } from 'react-icons/fa';
 
 type UserProfile = {
 	customerId: string;
@@ -15,10 +18,13 @@ type UserProfile = {
 
 const Profile = () => {
 	const { user } = useAuth();
+	const navigate = useNavigate();
 	const customerId = user?.customerId ?? '12345';
 
 	const [data, setData] = useState<UserProfile | null>(null);
+
 	const [loading, setLoading] = useState(true);
+
 	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
@@ -54,55 +60,75 @@ const Profile = () => {
 	}, [user, customerId]);
 
 	if (loading) {
-		return <div>Loading profile...</div>;
+		return (
+			<div className='profile-state' role='status' aria-live='polite'>
+				Loading profile...
+			</div>
+		);
 	}
 
 	if (error) {
-		return <div>Error: {error}</div>;
+		return (
+			<div className='profile-state error' role='alert'>
+				Error: {error}
+			</div>
+		);
 	}
 
 	if (!data) {
-		return <div>No profile data available.</div>;
+		return <div className='profile-state'>No profile data available.</div>;
 	}
 
 	return (
-		<div className='profile-container'>
-			<h2>Profile Overview</h2>
+		<main className='profile-page'>
+			<button className='back-btn' onClick={() => navigate('/')}>
+				<FaArrowLeft aria-hidden='true' />
+				Back
+			</button>
+			<section className='profile-card' aria-labelledby='profile-heading'>
+				<div className='profile-header'>
+					<div className='profile-avatar'>
+						<FaUserCircle aria-hidden='true' />
+					</div>
 
-			<div className='profile-card'>
-				<div className='profile-row'>
-					<span>Name</span>
-					<strong>{data.name}</strong>
+					<div>
+						<h1 id='profile-heading'>{data.name}</h1>
+
+						<p className='profile-subtitle'>{data.accountType} account</p>
+					</div>
 				</div>
 
-				<div className='profile-row'>
-					<span>Email</span>
-					<strong>{data.email}</strong>
-				</div>
+				<div className='profile-grid'>
+					<div className='profile-item'>
+						<span>Email</span>
+						<strong>{data.email}</strong>
+					</div>
 
-				<div className='profile-row'>
-					<span>Account Type</span>
-					<strong>{data.accountType}</strong>
-				</div>
+					<div className='profile-item'>
+						<span>Join Date</span>
+						<strong>
+							{new Date(data.joinDate).toLocaleDateString('en-ZA')}
+						</strong>
+					</div>
 
-				<div className='profile-row'>
-					<span>Join Date</span>
-					<strong>{data.joinDate}</strong>
-				</div>
+					<div className='profile-item'>
+						<span>Total Spent</span>
 
-				<div className='profile-row'>
-					<span>Total Spent</span>
-					<strong>
-						{data.currency} {data.totalSpent.toFixed(2)}
-					</strong>
-				</div>
+						<strong>
+							{data.currency}{' '}
+							{data.totalSpent.toLocaleString('en-ZA', {
+								minimumFractionDigits: 2,
+							})}
+						</strong>
+					</div>
 
-				<div className='profile-row'>
-					<span>Customer ID</span>
-					<strong>{data.customerId}</strong>
+					<div className='profile-item'>
+						<span>Customer ID</span>
+						<strong>{data.customerId}</strong>
+					</div>
 				</div>
-			</div>
-		</div>
+			</section>
+		</main>
 	);
 };
 

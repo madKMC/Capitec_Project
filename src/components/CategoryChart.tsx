@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import './CSS/CategoryChart.css';
 
 type Category = {
@@ -52,12 +52,12 @@ const CategoryChart = ({ categories }: CategoryChartProps) => {
 								))}
 							</Pie>
 
-							<Tooltip
+							{/* <Tooltip
 								formatter={() => [
 									`${chartData[activeIndex].name}`,
 									`${Number(chartData[activeIndex].percentage).toFixed(1)}%`,
 								]}
-							/>
+							/> */}
 						</PieChart>
 					</ResponsiveContainer>
 				</div>

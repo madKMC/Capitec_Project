@@ -38,7 +38,7 @@ const TrendChart = ({ trends }: TrendChartProps) => {
 			<div className='chart-header'>
 				<h3 className='chart-title'>Monthly Spending Trends</h3>
 
-				<p className='chart-subtitle'>Last 6 months overview</p>
+				<p className='chart-subtitle'>Last 12 months overview</p>
 			</div>
 
 			<div className='trend-chart-wrapper'>

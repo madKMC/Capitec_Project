@@ -8,8 +8,9 @@ export type User = {
 };
 
 export type AuthContextType = {
-	user: User | null;
-	token: string | null;
-	login: (username: string) => Promise<void>;
-	logout: () => Promise<void>;
+    user: User | null;
+    token: string | null;
+    isInitializing: boolean;
+    login: (username: string) => Promise<void>;
+    logout: () => Promise<void>;
 };

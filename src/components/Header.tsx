@@ -12,7 +12,7 @@ import { useTheme } from '../context/theme/useTheme';
 import './CSS/Header.css';
 
 const Header = () => {
-	const { user, login, logout } = useAuth();
+	const { user, logout } = useAuth();
 	const { theme, toggleTheme } = useTheme();
 
 	const [open, setOpen] = useState(false);
@@ -27,9 +27,7 @@ const Header = () => {
 	return (
 		<header className='header'>
 			<div className='header-left'>
-				<span className='brand'>
-					Finance Insight Overview
-				</span>
+				<span className='brand'>Finance Insight Overview</span>
 			</div>
 
 			<div className='header-actions'>
@@ -38,92 +36,48 @@ const Header = () => {
 					onClick={toggleTheme}
 					aria-label='Toggle theme'
 				>
-					{theme === 'dark' ? (
-						<FaSun />
-					) : (
-						<FaMoon />
-					)}
+					{theme === 'dark' ? <FaSun /> : <FaMoon />}
 				</button>
 
-				<div className='profile-wrapper'>
-					<button
-						className='icon-button profile'
-						onClick={() => setOpen((p) => !p)}
-						aria-label='Profile menu'
-					>
-						<FaUserCircle />
-					</button>
+				{user && (
+					<div className='profile-wrapper'>
+						<button
+							className='icon-button profile'
+							onClick={() => setOpen((p) => !p)}
+							aria-label='Profile menu'
+						>
+							<FaUserCircle />
+						</button>
 
-					{open && (
-						<div className='dropdown'>
-							<div className='dropdown-section'>
-								<p className='dropdown-label'>
-									Switch User
-								</p>
+						{open && (
+							<div className='dropdown'>
+								{user && (
+									<>
+										<div className='active-user'>
+											<p>{user.name}</p>
+											<span>{user.accountType}</span>
+										</div>
 
-								<button
-									className='dropdown-item'
-									onClick={() =>
-										login('alice')
-									}
-								>
-									Alice
-								</button>
+										<div className='dropdown-actions'>
+											<button
+												className='dropdown-item profile-action'
+												onClick={handleViewProfile}
+											>
+												<FaUser />
+												View Profile
+											</button>
 
-								<button
-									className='dropdown-item'
-									onClick={() =>
-										login('bob')
-									}
-								>
-									Bob
-								</button>
-
-								<button
-									className='dropdown-item'
-									onClick={() =>
-										login('john')
-									}
-								>
-									John
-								</button>
+											<button className='dropdown-item logout' onClick={logout}>
+												<FaSignOutAlt />
+												Logout
+											</button>
+										</div>
+									</>
+								)}
 							</div>
-
-							{user && (
-								<>
-									<hr className='dropdown-divider' />
-
-									<div className='active-user'>
-										<p>{user.name}</p>
-										<span>
-											{user.accountType}
-										</span>
-									</div>
-
-									<div className='dropdown-actions'>
-										<button
-											className='dropdown-item profile-action'
-											onClick={
-												handleViewProfile
-											}
-										>
-											<FaUser />
-											View Profile
-										</button>
-
-										<button
-											className='dropdown-item logout'
-											onClick={logout}
-										>
-											<FaSignOutAlt />
-											Logout
-										</button>
-									</div>
-								</>
-							)}
-						</div>
-					)}
-				</div>
+						)}
+					</div>
+				)}
 			</div>
 		</header>
 	);

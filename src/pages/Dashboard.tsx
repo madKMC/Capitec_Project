@@ -5,6 +5,8 @@ import './CSS/Dashboard.css';
 import { useAuth } from '../context/auth/useAuth';
 import CategoryChart from '../components/CategoryChart';
 import TrendChart from '../components/TrendChart';
+import GoalsChart from '../components/GoalsChart';
+import TransactionsCard from '../components/TransactionCard';
 
 interface SpendingSummary {
 	period: string;
@@ -34,10 +36,25 @@ type Trend = {
 	averageTransaction: number;
 };
 
+type Goal = {
+	id: string;
+	title: string;
+	targetAmount: number;
+	currentAmount: number;
+	dueDate: string;
+	status: 'on_track' | 'warning' | 'exceeded';
+	category: string;
+	monthlyBudget: number;
+	currentSpent: number;
+	percentageUsed: number;
+	daysRemaining: number;
+};
+
 const Dashboard = () => {
 	const { user } = useAuth();
 
 	const [summary, setSummary] = useState<SpendingSummary | null>(null);
+	const [goals, setGoals] = useState<Goal[] | null>(null);
 	const [categories, setCategories] = useState<Category[] | null>(null);
 	const [trends, setTrends] = useState<Trend[] | null>(null);
 	const [loading, setLoading] = useState(true);
@@ -51,6 +68,8 @@ const Dashboard = () => {
 		let mounted = true;
 
 		async function loadMockData() {
+			setError(null);
+			setLoading(true);
 			try {
 				const summaryData = await apiFetch(
 					`/api/customers/${customerId}/spending/summary`,
@@ -60,13 +79,16 @@ const Dashboard = () => {
 				);
 
 				const trendsData = await apiFetch(
-					`/api/customers/${customerId}/spending/trends`
+					`/api/customers/${customerId}/spending/trends`,
 				);
+
+				const goalsData = await apiFetch(`/api/customers/${customerId}/goals`);
 
 				if (mounted) {
 					setSummary(summaryData);
 					setCategories(categoryData.categories);
 					setTrends(trendsData.trends);
+					setGoals(goalsData.goals);
 				}
 			} catch (err: unknown) {
 				if (mounted) {
@@ -113,13 +135,12 @@ const Dashboard = () => {
 							title='Average Transaction'
 							value={`R${summary.averageTransaction}`}
 						/>
-						
 					</section>
 					<section className='chart-section'>
-						{categories && (
-							<CategoryChart categories={categories} />
-						)}
+						{categories && <CategoryChart categories={categories} />}
 						{trends && <TrendChart trends={trends} />}
+						{goals && <GoalsChart goals={goals} />}
+						<TransactionsCard customerId={user?.customerId ?? '12345'} />
 					</section>
 				</>
 			)}

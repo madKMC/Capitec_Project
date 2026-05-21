@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { apiFetch } from '../../api/client';
 import { AuthContext } from './auth.context';
 import type { User, AuthContextType } from './auth.types';
@@ -11,6 +11,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 	const [token, setToken] = useState<string | null>(() =>
 		localStorage.getItem('token'),
 	);
+	const [isInitializing, setIsInitializing] = useState<boolean>(
+		() => !!localStorage.getItem('token'),
+	);
+
+	useEffect(() => {
+		if (!token) {
+			return;
+		}
+		apiFetch('/api/customers/' + user?.customerId + '/profile')
+			.then(() => setIsInitializing(false))
+			.catch(() => {
+				localStorage.removeItem('token');
+				localStorage.removeItem('user');
+				setToken(null);
+				setUser(null);
+				setIsInitializing(false);
+			});
+	}, [token, user?.customerId]);
 
 	const login: AuthContextType['login'] = async (username) => {
 		const response = await apiFetch('/auth/login', {
@@ -49,7 +67,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 	};
 
 	return (
-		<AuthContext.Provider value={{ user, token, login, logout }}>
+		<AuthContext.Provider value={{ user, token, isInitializing, login, logout }}>
 			{children}
 		</AuthContext.Provider>
 	);

@@ -1,35 +1,52 @@
 import './App.css';
 import Header from './components/Header';
-import Navigation from './components/Navigation';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
-import Transactions from './pages/Transactions';
 import Profile from './pages/Profile';
 import { AuthProvider } from './context/auth/AuthProvider';
-import SpendingGoals from './pages/Goals';
 import { ThemeProvider } from './context/theme/ThemeProvider';
+import { useAuth } from './context/auth/useAuth';
+import Login from './pages/Login';
 
 function App() {
 	return (
 		<AuthProvider>
 			<ThemeProvider>
 				<Router>
-					<div className='App'>
-						<Navigation></Navigation>
-
-						<main className='main-content'>
-							<Header></Header>
-							<Routes>
-								<Route path='/' Component={Dashboard} />
-								<Route path='/transactions' Component={Transactions} />
-								<Route path='/goals' Component={SpendingGoals} />
-								<Route path='/profile' Component={Profile} />
-							</Routes>
-						</main>
-					</div>
+					<AppRoutes />
 				</Router>
 			</ThemeProvider>
 		</AuthProvider>
+	);
+}
+
+function AppRoutes() {
+	const { user, isInitializing } = useAuth();
+
+	return (
+		<div className='App'>
+			<main className='main-content'>
+				<Header />
+				{isInitializing ? (
+					<div
+						style={{
+							padding: '2rem',
+							textAlign: 'center',
+							color: 'var(--muted)',
+						}}
+					>
+						Loading...
+					</div>
+				) : user ? (
+					<Routes>
+						<Route path='/' Component={Dashboard} />
+						<Route path='/profile' Component={Profile} />
+					</Routes>
+				) : (
+					<Login />
+				)}
+			</main>
+		</div>
 	);
 }
 
