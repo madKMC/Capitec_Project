@@ -242,7 +242,7 @@ const GoalsChart = ({ goals }: GoalsChartProps) => {
 							dataKey='remaining'
 							stackId='goal'
 							fill='var(--border)'
-							radius={[8, 8, 0, 0]}
+							radius={[0, 8, 8, 0]}
 						/>
 					</BarChart>
 				</ResponsiveContainer>
