@@ -34,12 +34,19 @@
 }
 
 .transactions-filters select {
-	background: transparent;
+	background: var(--panel);
 	border: 1px solid var(--border);
 	color: var(--text);
 	padding: 0.5rem 0.75rem;
 	border-radius: 10px;
 	outline: none;
+	cursor: pointer;
+}
+
+.transactions-filters select option {
+	background: var(--panel);
+	color: var(--text);
+	border-color: var(--border);
 }
 
 .transactions-body {
