@@ -28,7 +28,7 @@ function AppRoutes() {
 			<main className='main-content'>
 				<Header />
 				{isInitializing ? (
-					<div className='loading'
+					<div className='loading' role='status' aria-live='polite'
 					>
 						Loading...
 					</div>

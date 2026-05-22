@@ -130,10 +130,12 @@ const GoalsChart = ({ goals }: GoalsChartProps) => {
 			<div className='chart-header'>
 				<h3 className='chart-title'>Spending Goals</h3>
 
-				<p className='chart-subtitle'>Monthly budget progress</p>
+				<p className='chart-subtitle' aria-hidden='true'>
+					Monthly budget progress
+				</p>
 			</div>
 
-			<div className='goals-chart-wrapper'>
+			<div className='goals-chart-wrapper' aria-hidden='true'>
 				<ResponsiveContainer width='100%' height={320}>
 					<BarChart
 						layout='vertical'
@@ -186,8 +188,8 @@ const GoalsChart = ({ goals }: GoalsChartProps) => {
 
 										return (
 											<foreignObject
-												x={x - 36}
-												y={y - 12}
+												x={(x as number) - 36}
+												y={(y as number) - 12}
 												width={32}
 												height={24}
 											>
@@ -250,7 +252,7 @@ const GoalsChart = ({ goals }: GoalsChartProps) => {
 				</ResponsiveContainer>
 			</div>
 
-			<div className='goal-summary'>
+			<div className='goal-summary' aria-hidden='true'>
 				{goals.map((goal) => (
 					<div key={goal.id} className='goal-pill'>
 						<span
@@ -274,6 +276,35 @@ const GoalsChart = ({ goals }: GoalsChartProps) => {
 					</div>
 				))}
 			</div>
+
+			{/* Screen reader data table */}
+			<table className='sr-only'>
+				<caption>Monthly budget progress per spending category</caption>
+				<thead>
+					<tr>
+						<th scope='col'>Category</th>
+						<th scope='col'>Monthly Budget (R)</th>
+						<th scope='col'>Amount Spent (R)</th>
+						<th scope='col'>Remaining (R)</th>
+						<th scope='col'>Percentage Used</th>
+						<th scope='col'>Status</th>
+						<th scope='col'>Days Remaining</th>
+					</tr>
+				</thead>
+				<tbody>
+					{chartData.map((row) => (
+						<tr key={row.category}>
+							<td>{row.category}</td>
+							<td>{row.budget.toFixed(2)}</td>
+							<td>{row.spent.toFixed(2)}</td>
+							<td>{row.remaining.toFixed(2)}</td>
+							<td>{Math.round(row.percentage)}%</td>
+							<td>{row.status.replace('_', ' ')}</td>
+							<td>{row.daysRemaining}</td>
+						</tr>
+					))}
+				</tbody>
+			</table>
 		</div>
 	);
 };

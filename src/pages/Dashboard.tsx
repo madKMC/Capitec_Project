@@ -124,7 +124,7 @@ const Dashboard = () => {
 						Spending Summary ({summary.period})
 					</h2>
 
-					<section className='summary-grid' aria-label="Spending summary cards">
+					<section className='summary-grid' aria-label="Spending summary">
 						<SummaryCard title='Total Spent' value={`R${summary.totalSpent}`} />
 						<SummaryCard
 							title='Transactions'

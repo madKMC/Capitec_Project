@@ -111,7 +111,9 @@ const TransactionsCard = ({ customerId }: Props) => {
 
 			{/* Filters */}
 			<div className='transactions-filters'>
-				<label htmlFor='category-select' className='visually-hidden'>Select category</label>
+				<label htmlFor='category-select' className='visually-hidden'>
+					Select category
+				</label>
 				<select
 					id='category-select'
 					value={selectedCategory}
@@ -119,7 +121,7 @@ const TransactionsCard = ({ customerId }: Props) => {
 						setSelectedCategory(e.target.value);
 						setOffset(0);
 					}}
-					aria-label="Select transaction category"
+					aria-label='Select transaction category'
 				>
 					<option value='All'>All Categories</option>
 					{categories.map((cat) => (
@@ -136,7 +138,7 @@ const TransactionsCard = ({ customerId }: Props) => {
 						setOffset(0);
 					}}
 					id='date-range-select'
-					aria-label="Select date range for transactions"
+					aria-label='Select date range for transactions'
 				>
 					{dateRanges.map((range) => (
 						<option key={range.value} value={range.value}>
@@ -149,13 +151,20 @@ const TransactionsCard = ({ customerId }: Props) => {
 			{/* Body */}
 			<div className='transactions-body'>
 				{loading ? (
-					<div className='transactions-loading' role='status' aria-live='polite'>Loading dataset...</div>
+					<div
+						className='transactions-loading'
+						role='status'
+						aria-live='polite'
+					>
+						Loading dataset...
+					</div>
 				) : (
 					filteredTransactions.map((txn) => (
 						<div key={txn.id} className='transaction-row'>
 							<div
 								className='transaction-icon'
 								style={{ background: txn.categoryColor }}
+								aria-hidden='true'
 							/>
 
 							<div className='transaction-meta'>
@@ -163,7 +172,12 @@ const TransactionsCard = ({ customerId }: Props) => {
 								<div className='transaction-description'>{txn.description}</div>
 							</div>
 
-							<div className='transaction-amount' aria-label={`Transaction amount: R${txn.amount.toFixed(2)}`}>R{txn.amount.toFixed(2)}</div>
+							<div
+								className='transaction-amount'
+								aria-label={`Transaction amount: R${txn.amount.toFixed(2)}`}
+							>
+								R{txn.amount.toFixed(2)}
+							</div>
 						</div>
 					))
 				)}
@@ -174,7 +188,7 @@ const TransactionsCard = ({ customerId }: Props) => {
 				<button
 					onClick={() => setOffset((prev) => Math.max(0, prev - limit))}
 					disabled={offset === 0}
-					aria-label="Previous page of transactions"
+					aria-label='Previous page of transactions'
 				>
 					Previous
 				</button>
@@ -182,7 +196,7 @@ const TransactionsCard = ({ customerId }: Props) => {
 				<button
 					onClick={() => setOffset((prev) => prev + limit)}
 					disabled={!hasMore}
-					aria-label="Next page of transactions"
+					aria-label='Next page of transactions'
 				>
 					Next
 				</button>

@@ -76,11 +76,15 @@ const Profile = () => {
 	}
 
 	if (!data) {
-		return <div className='profile-state'>No profile data available.</div>;
+		return (
+			<div className='profile-state' role='status' aria-live='polite'>
+				No profile data available.
+			</div>
+		);
 	}
 
 	return (
-		<main className='profile-page'>
+		<div className='profile-page'>
 			<button className='back-btn' onClick={() => navigate('/')}>
 				<FaArrowLeft aria-hidden='true' />
 				Back
@@ -98,37 +102,34 @@ const Profile = () => {
 					</div>
 				</div>
 
-				<div className='profile-grid'>
+				<dl className='profile-grid'>
 					<div className='profile-item'>
-						<span>Email</span>
-						<strong>{data.email}</strong>
+						<dt>Email</dt>
+						<dd>{data.email}</dd>
 					</div>
 
 					<div className='profile-item'>
-						<span>Join Date</span>
-						<strong>
-							{new Date(data.joinDate).toLocaleDateString('en-ZA')}
-						</strong>
+						<dt>Join Date</dt>
+						<dd>{new Date(data.joinDate).toLocaleDateString('en-ZA')}</dd>
 					</div>
 
 					<div className='profile-item'>
-						<span>Total Spent</span>
-
-						<strong>
+						<dt>Total Spent</dt>
+						<dd>
 							{data.currency}{' '}
 							{data.totalSpent.toLocaleString('en-ZA', {
 								minimumFractionDigits: 2,
 							})}
-						</strong>
+						</dd>
 					</div>
 
 					<div className='profile-item'>
-						<span>Customer ID</span>
-						<strong>{data.customerId}</strong>
+						<dt>Customer ID</dt>
+						<dd>{data.customerId}</dd>
 					</div>
-				</div>
+				</dl>
 			</section>
-		</main>
+		</div>
 	);
 };
 

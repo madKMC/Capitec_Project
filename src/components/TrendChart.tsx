@@ -35,13 +35,36 @@ const TrendChart = ({ trends }: TrendChartProps) => {
 
 	return (
 		<div className='trend-chart-card'>
-			<div className='chart-header'>
-				<h3 className='chart-title'>Monthly Spending Trends</h3>
+			<div className='chart-header' aria-hidden='true'>
+				<h3 className='chart-title' id='trend-chart-title'>Monthly Spending Trends</h3>
 
 				<p className='chart-subtitle'>Last 12 months overview</p>
 			</div>
 
-			<div className='trend-chart-wrapper'>
+			{/* Screen reader data table */}
+			<table className='sr-only'>
+				<caption>Monthly spending trends for the last 12 months</caption>
+				<thead>
+					<tr>
+						<th scope='col'>Month</th>
+						<th scope='col'>Total Spent (R)</th>
+						<th scope='col'>Average Transaction (R)</th>
+						<th scope='col'>Transaction Count</th>
+					</tr>
+				</thead>
+				<tbody>
+					{chartData.map((row) => (
+						<tr key={row.month}>
+							<td>{row.month}</td>
+							<td>{row.totalSpent.toFixed(2)}</td>
+							<td>{row.averageTransaction.toFixed(2)}</td>
+							<td>{row.transactionCount}</td>
+						</tr>
+					))}
+				</tbody>
+			</table>
+
+			<div className='trend-chart-wrapper' aria-hidden='true'>
 				<ResponsiveContainer width='100%' height={320}>
 					<AreaChart
 						data={chartData}

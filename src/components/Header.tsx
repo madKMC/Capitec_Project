@@ -34,7 +34,9 @@ const Header = () => {
 				<button
 					className='icon-button'
 					onClick={toggleTheme}
-					aria-label='Toggle theme'
+					aria-label={
+						theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
+					}
 				>
 					{theme === 'dark' ? <FaSun /> : <FaMoon />}
 				</button>
@@ -45,12 +47,23 @@ const Header = () => {
 							className='icon-button profile'
 							onClick={() => setOpen((p) => !p)}
 							aria-label='Profile menu'
+							aria-expanded={open}
+							aria-haspopup='menu'
 						>
-							<FaUserCircle />
+							<FaUserCircle aria-hidden='true' />
 						</button>
 
 						{open && (
-							<div className='dropdown'>
+							<div
+								className='dropdown'
+								role='menu'
+								aria-label='Profile options'
+								onKeyDown={(e) => {
+									if (e.key === 'Escape') {
+										setOpen(false);
+									}
+								}}
+							>
 								{user && (
 									<>
 										<div className='active-user'>
@@ -62,13 +75,30 @@ const Header = () => {
 											<button
 												className='dropdown-item profile-action'
 												onClick={handleViewProfile}
+												role='menuitem'
+												tabIndex={0}
+												onKeyDown={(e) => {
+													if (e.key === 'Enter' || e.key === ' ') {
+														handleViewProfile();
+													}
+												}}
 											>
-												<FaUser />
+												<FaUser aria-hidden='true' />
 												View Profile
 											</button>
 
-											<button className='dropdown-item logout' onClick={logout}>
-												<FaSignOutAlt />
+											<button
+												className='dropdown-item logout'
+												onClick={logout}
+												role='menuitem'
+												tabIndex={0}
+												onKeyDown={(e) => {
+													if (e.key === 'Enter' || e.key === ' ') {
+														logout();
+													}
+												}}
+											>
+												<FaSignOutAlt aria-hidden='true' />
 												Logout
 											</button>
 										</div>

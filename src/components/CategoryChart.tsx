@@ -31,15 +31,14 @@ const CategoryChart = ({ categories }: CategoryChartProps) => {
 
 	return (
 		<div className='category-chart-card'>
-			<h3 className='chart-title'>Category Spending Breakdown</h3>
+			<h3 className='chart-title' id='category-chart-title'>Category Spending Breakdown</h3>
 
 			{/* Visually hidden data table for screen readers */}
-			<table className='sr-only'>
-				<caption>Category Spending Breakdown</caption>
+			<table className='sr-only' aria-labelledby='category-chart-title'>
 				<thead>
 					<tr>
 						<th scope='col'>Category</th>
-						<th scope='col'>Amount (R)</th>
+						<th scope='col'>Amount</th>
 						<th scope='col'>Percentage</th>
 					</tr>
 				</thead>
