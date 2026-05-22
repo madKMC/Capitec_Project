@@ -49,3 +49,15 @@ body {
 		Roboto,
 		sans-serif;
 }
+
+.loading {
+	padding: 2rem;
+	text-align: center;
+	color: var(--muted);
+}
+
+.main-content {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+}

@@ -111,12 +111,12 @@ const Dashboard = () => {
 	}, [user]);
 
 	return (
-		<div className='dashboard'>
+		<main className='dashboard'>
 			{loading && (
-				<div className='state'>Loading financial insight overview...</div>
+				<div className='state' role='status' aria-live='polite'>Loading financial insight overview...</div>
 			)}
 
-			{error && <div className='state error'>Error: {error}</div>}
+			{error && <div className='state error' role='alert'>Error: {error}</div>}
 
 			{summary && (
 				<>
@@ -124,7 +124,7 @@ const Dashboard = () => {
 						Spending Summary ({summary.period})
 					</h2>
 
-					<section className='summary-grid'>
+					<section className='summary-grid' aria-label="Spending summary cards">
 						<SummaryCard title='Total Spent' value={`R${summary.totalSpent}`} />
 						<SummaryCard
 							title='Transactions'
@@ -136,7 +136,7 @@ const Dashboard = () => {
 							value={`R${summary.averageTransaction}`}
 						/>
 					</section>
-					<section className='chart-section'>
+					<section className='chart-section' aria-label="Charts and transactions">
 						{categories && <CategoryChart categories={categories} />}
 						{trends && <TrendChart trends={trends} />}
 						{goals && <GoalsChart goals={goals} />}
@@ -146,9 +146,9 @@ const Dashboard = () => {
 			)}
 
 			{!loading && !summary && !error && (
-				<div className='state'>No financial data available.</div>
+				<div className='state' role='status' aria-live='polite'>No financial data available.</div>
 			)}
-		</div>
+		</main>
 	);
 };
 

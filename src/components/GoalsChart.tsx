@@ -145,6 +145,8 @@ const GoalsChart = ({ goals }: GoalsChartProps) => {
 							bottom: 10,
 						}}
 						barCategoryGap={18}
+						role='img'
+						aria-label='Bar chart showing monthly budget progress for each spending category'
 					>
 						<CartesianGrid
 							strokeDasharray='3 3'

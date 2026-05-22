@@ -32,8 +32,34 @@ const CategoryChart = ({ categories }: CategoryChartProps) => {
 	return (
 		<div className='category-chart-card'>
 			<h3 className='chart-title'>Category Spending Breakdown</h3>
-			<div className='chart-body'>
-				<div className='chart-wrapper'>
+
+			{/* Visually hidden data table for screen readers */}
+			<table className='sr-only'>
+				<caption>Category Spending Breakdown</caption>
+				<thead>
+					<tr>
+						<th scope='col'>Category</th>
+						<th scope='col'>Amount (R)</th>
+						<th scope='col'>Percentage</th>
+					</tr>
+				</thead>
+				<tbody>
+					{chartData.map((item) => (
+						<tr key={item.name}>
+							<td>{item.name}</td>
+							<td>R{item.value.toFixed(0)}</td>
+							<td>{item.percentage}%</td>
+						</tr>
+					))}
+				</tbody>
+			</table>
+
+			<div className='chart-body' aria-hidden='true'>
+				<div
+					className='chart-wrapper'
+					role='img'
+					aria-label='Pie chart showing spending breakdown by category'
+				>
 					<ResponsiveContainer width='100%' height={320}>
 						<PieChart>
 							<Pie
@@ -68,6 +94,15 @@ const CategoryChart = ({ categories }: CategoryChartProps) => {
 							key={item.name}
 							className={`legend-item ${activeIndex === index ? 'active' : ''}`}
 							onMouseEnter={() => setActiveIndex(index)}
+							tabIndex={0}
+							onFocus={() => setActiveIndex(index)}
+							onKeyDown={(e) => {
+								if (e.key === 'Enter' || e.key === ' ') {
+									setActiveIndex(index);
+								}
+							}}
+							role='button'
+							aria-label={`View details for ${item.name} category`}
 						>
 							<div className='legend-left'>
 								<span
@@ -75,6 +110,7 @@ const CategoryChart = ({ categories }: CategoryChartProps) => {
 									style={{
 										background: item.color,
 									}}
+									aria-label={`Category color for ${item.name}`}
 								/>
 
 								<span>{item.name}</span>
@@ -83,7 +119,12 @@ const CategoryChart = ({ categories }: CategoryChartProps) => {
 							<div className='legend-right'>
 								<span>R{item.value.toFixed(0)}</span>
 
-								<span className='percentage'>{item.percentage}%</span>
+								<span
+									className='percentage'
+									aria-label={`Category percentage for ${item.name}`}
+								>
+									{item.percentage}%
+								</span>
 							</div>
 						</div>
 					))}

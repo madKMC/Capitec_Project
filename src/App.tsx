@@ -28,12 +28,7 @@ function AppRoutes() {
 			<main className='main-content'>
 				<Header />
 				{isInitializing ? (
-					<div
-						style={{
-							padding: '2rem',
-							textAlign: 'center',
-							color: 'var(--muted)',
-						}}
+					<div className='loading'
 					>
 						Loading...
 					</div>
