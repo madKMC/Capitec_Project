@@ -1,27 +1,21 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { render, screen, act, waitFor } from '@testing-library/react';
-import { AuthProvider } from '../auth/AuthProvider';
-import { useAuth } from '../auth/useAuth';
+import { AuthProvider } from './AuthProvider';
+import { useAuth } from './useAuth';
 import * as client from '../../api/client';
 import { describe, beforeEach, it, expect, vi } from 'vitest';
 
 // Helper consumer component so tests can read context values
 function TestConsumer(): React.ReactElement {
 	const { user, token, isInitializing } = useAuth();
-	return React.createElement(
-		'div',
-		null,
-		React.createElement(
-			'span',
-			{ 'data-testid': 'user' },
-			user?.name ?? 'none',
-		),
-		React.createElement('span', { 'data-testid': 'token' }, token ?? 'none'),
-		React.createElement(
-			'span',
-			{ 'data-testid': 'init' },
-			isInitializing ? 'initializing' : 'ready',
-		),
+	return (
+		<div>
+			<span data-testid='user'>{user?.name ?? 'none'}</span>
+			<span data-testid='token'>{token ?? 'none'}</span>
+			<span data-testid='init'>
+				{isInitializing ? 'initializing' : 'ready'}
+			</span>
+		</div>
 	);
 }
 
@@ -33,11 +27,9 @@ describe('AuthProvider', () => {
 
 	it('initializes with no user or token', () => {
 		render(
-			React.createElement(
-				AuthProvider,
-				null,
-				React.createElement(TestConsumer),
-			),
+			<AuthProvider>
+				<TestConsumer />
+			</AuthProvider>,
 		);
 		expect(screen.getByTestId('user').textContent).toBe('none');
 		expect(screen.getByTestId('token').textContent).toBe('none');
@@ -57,11 +49,9 @@ describe('AuthProvider', () => {
 		vi.spyOn(client, 'apiFetch').mockResolvedValue({ name: 'Alice' }); // profile check passes
 
 		render(
-			React.createElement(
-				AuthProvider,
-				null,
-				React.createElement(TestConsumer),
-			),
+			<AuthProvider>
+				<TestConsumer />
+			</AuthProvider>,
 		);
 
 		await waitFor(() => {
@@ -79,11 +69,9 @@ describe('AuthProvider', () => {
 		vi.spyOn(client, 'apiFetch').mockRejectedValue(new Error('401'));
 
 		render(
-			React.createElement(
-				AuthProvider,
-				null,
-				React.createElement(TestConsumer),
-			),
+			<AuthProvider>
+				<TestConsumer />
+			</AuthProvider>,
 		);
 
 		await waitFor(() => {
@@ -105,18 +93,16 @@ describe('AuthProvider', () => {
 		const loginFnRef: { current?: (username: string) => Promise<void> } = {};
 		const Capture = () => {
 			const { login, user } = useAuth();
-			React.useEffect(() => {
+			useEffect(() => {
 				loginFnRef.current = login;
 			}, [login]);
-			return React.createElement(
-				'span',
-				{ 'data-testid': 'user' },
-				user?.name ?? 'none',
-			);
+			return <span data-testid='user'>{user?.name ?? 'none'}</span>;
 		};
 
 		render(
-			React.createElement(AuthProvider, null, React.createElement(Capture)),
+			<AuthProvider>
+				<Capture />
+			</AuthProvider>,
 		);
 
 		await act(async () => {
@@ -138,18 +124,16 @@ describe('AuthProvider', () => {
 		const logoutFnRef: { current?: () => Promise<void> } = {};
 		const Capture = () => {
 			const { logout, user } = useAuth();
-			React.useEffect(() => {
+			useEffect(() => {
 				logoutFnRef.current = logout;
 			}, [logout]);
-			return React.createElement(
-				'span',
-				{ 'data-testid': 'user' },
-				user?.name ?? 'none',
-			);
+			return <span data-testid='user'>{user?.name ?? 'none'}</span>;
 		};
 
 		render(
-			React.createElement(AuthProvider, null, React.createElement(Capture)),
+			<AuthProvider>
+				<Capture />
+			</AuthProvider>,
 		);
 		await act(async () => {
 			await logoutFnRef.current!();
@@ -162,11 +146,9 @@ describe('AuthProvider', () => {
 
 	it('isInitializing is false immediately when no token is stored', () => {
 		render(
-			React.createElement(
-				AuthProvider,
-				null,
-				React.createElement(TestConsumer),
-			),
+			<AuthProvider>
+				<TestConsumer />
+			</AuthProvider>,
 		);
 		expect(screen.getByTestId('init').textContent).toBe('ready');
 	});
