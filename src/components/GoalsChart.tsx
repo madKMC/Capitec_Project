@@ -237,6 +237,7 @@ const GoalsChart = ({ goals }: GoalsChartProps) => {
 								<Cell
 									key={entry.category}
 									fill={getStatusColor(entry.status)}
+									radius={entry.status === 'exceeded' ? [0, 8, 8, 0] : [0, 0, 0, 0]}
 								/>
 							))}
 						</Bar>
