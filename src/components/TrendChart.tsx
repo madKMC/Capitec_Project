@@ -86,7 +86,7 @@ const TrendChart = ({ trends }: TrendChartProps) => {
 							width={50}
 						/>
 
-						<Tooltip
+						<Tooltip 
 							formatter={(value, name) => {
 								if (name === 'totalSpent') {
 									return [`R${Number(value).toFixed(2)}`, 'Total Spent'];
