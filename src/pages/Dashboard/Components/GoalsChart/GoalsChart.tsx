@@ -18,8 +18,8 @@ import {
 	FaBolt,
 } from 'react-icons/fa';
 
-import { apiFetch } from '../api/client';
-import { useAuth } from '../context/auth/useAuth';
+import { apiFetch } from '../../../../api/client';
+import { useAuth } from '../../../../context/auth/useAuth';
 import './CSS/GoalsChart.css';
 
 type Goal = {

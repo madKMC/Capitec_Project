@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import './CSS/TransactionCard.css';
-import { apiFetch } from '../api/client';
+import { apiFetch } from '../../../../api/client';
 
 type Transaction = {
 	id: string;

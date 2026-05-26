@@ -1,5 +1,5 @@
-import { useAuth } from '../context/auth/useAuth';
-import './CSS/Login.css';
+import { useAuth } from '../../context/auth/useAuth';
+import './Login.css';
 
 const Login = () => {
     const { login } = useAuth();

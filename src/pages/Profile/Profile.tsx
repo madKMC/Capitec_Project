@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { apiFetch } from '../api/client';
-import './CSS/Profile.css';
-import { useAuth } from '../context/auth/useAuth';
+import { apiFetch } from '../../api/client';
+import './Profile.css';
+import { useAuth } from '../../context/auth/useAuth';
 import { FaUserCircle } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { FaArrowLeft } from 'react-icons/fa';

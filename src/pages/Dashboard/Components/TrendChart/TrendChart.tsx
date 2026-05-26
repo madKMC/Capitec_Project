@@ -8,7 +8,7 @@ import {
 	Tooltip,
 	ResponsiveContainer,
 } from 'recharts';
-import './CSS/TrendChart.css';
+import './TrendChart.css';
 
 type Trend = {
 	month: string;
@@ -36,7 +36,9 @@ const TrendChart = ({ trends }: TrendChartProps) => {
 	return (
 		<div className='trend-chart-card'>
 			<div className='chart-header' aria-hidden='true'>
-				<h3 className='chart-title' id='trend-chart-title'>Monthly Spending Trends</h3>
+				<h3 className='chart-title' id='trend-chart-title'>
+					Monthly Spending Trends
+				</h3>
 
 				<p className='chart-subtitle'>Last 12 months overview</p>
 			</div>
@@ -86,7 +88,13 @@ const TrendChart = ({ trends }: TrendChartProps) => {
 							width={50}
 						/>
 
-						<Tooltip 
+						<Tooltip
+							contentStyle={{
+								background: 'var(--panel)',
+								border: '1px solid var(--border)',
+								borderRadius: '4px',
+								color: 'var(--text)',
+							}}
 							formatter={(value, name) => {
 								if (name === 'totalSpent') {
 									return [`R${Number(value).toFixed(2)}`, 'Total Spent'];

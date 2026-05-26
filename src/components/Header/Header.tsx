@@ -7,8 +7,8 @@ import {
 } from 'react-icons/fa';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/auth/useAuth';
-import { useTheme } from '../context/theme/useTheme';
+import { useAuth } from '../../context/auth/useAuth';
+import { useTheme } from '../../context/theme/useTheme';
 import './CSS/Header.css';
 
 const Header = () => {
@@ -27,7 +27,7 @@ const Header = () => {
 	return (
 		<header className='header'>
 			<div className='header-left'>
-				<span className='brand'>Finance Insight Overview</span>
+				<h1 className='brand'>Finance Insight Overview</h1>
 			</div>
 
 			<div className='header-actions'>

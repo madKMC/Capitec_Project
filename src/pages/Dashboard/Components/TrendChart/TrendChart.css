@@ -17,15 +17,6 @@
 	border: 0;
 }
 
-.tooltip {
-	background: var(--bg);
-	color: var(--text);
-	padding: 0.5rem 0.75rem;
-	border-radius: 4px;
-	font-size: 0.875rem;
-	white-space: nowrap;
-}
-
 .chart-header {
 	margin-bottom: 1rem;
 }

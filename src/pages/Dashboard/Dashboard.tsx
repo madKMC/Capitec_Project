@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { apiFetch } from '../api/client';
-import SummaryCard from '../components/SummaryCard';
-import './CSS/Dashboard.css';
-import { useAuth } from '../context/auth/useAuth';
-import CategoryChart from '../components/CategoryChart';
-import TrendChart from '../components/TrendChart';
-import GoalsChart from '../components/GoalsChart';
-import TransactionsCard from '../components/TransactionCard';
+import { apiFetch } from '../../api/client';
+import SummaryCard from '../../components/SummaryCard/SummaryCard';
+import './Dashboard.css';
+import { useAuth } from '../../context/auth/useAuth';
+import CategoryChart from './Components/CategoryChart/CategoryChart';
+import TrendChart from './Components/TrendChart/TrendChart';
+import GoalsChart from './Components/GoalsChart/GoalsChart';
+import TransactionsCard from './Components/TransactionCard/TransactionCard';
 
 interface SpendingSummary {
 	period: string;

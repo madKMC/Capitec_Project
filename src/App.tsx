@@ -1,12 +1,12 @@
 import './App.css';
-import Header from './components/Header';
+import Header from './components/Header/Header';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
-import Dashboard from './pages/Dashboard';
-import Profile from './pages/Profile';
+import Dashboard from './pages/Dashboard/Dashboard';
+import Profile from './pages/Profile/Profile';
 import { AuthProvider } from './context/auth/AuthProvider';
 import { ThemeProvider } from './context/theme/ThemeProvider';
 import { useAuth } from './context/auth/useAuth';
-import Login from './pages/Login';
+import Login from './pages/Login/Login';
 
 function App() {
 	return (
