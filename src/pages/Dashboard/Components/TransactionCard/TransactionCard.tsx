@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
-import './CSS/TransactionCard.css';
+import './TransactionCard.css';
 import { apiFetch } from '../../../../api/client';
+import CardTitle from '../../../../components/CardTitles/CardTitle';
+import TransactionInfo from '../../../../components/TransactionInfo/TransactionInfo';
 
 type Transaction = {
 	id: string;
@@ -100,14 +102,10 @@ const TransactionsCard = ({ customerId }: Props) => {
 
 	return (
 		<div className='transactions-card'>
-			<div className='transactions-header'>
-				<div>
-					<h3 className='transactions-title'>Transactions</h3>
-					<p className='transactions-subtitle'>
-						Operational financial activity stream
-					</p>
-				</div>
-			</div>
+			<CardTitle
+				title='Transactions'
+				subtitle='Operational financial activity stream'
+			/>
 
 			{/* Filters */}
 			<div className='transactions-filters'>
@@ -167,10 +165,11 @@ const TransactionsCard = ({ customerId }: Props) => {
 								aria-hidden='true'
 							/>
 
-							<div className='transaction-meta'>
-								<div className='transaction-merchant'>{txn.merchant}</div>
-								<div className='transaction-description'>{txn.description}</div>
-							</div>
+							<TransactionInfo
+								merchant={txn.merchant}
+								description={txn.description}
+								date={txn.date}
+							/>
 
 							<div
 								className='transaction-amount'

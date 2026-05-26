@@ -8,7 +8,6 @@ import {
 	Cell,
 	CartesianGrid,
 } from 'recharts';
-
 import {
 	FaShoppingCart,
 	FaFilm,
@@ -17,10 +16,11 @@ import {
 	FaShoppingBag,
 	FaBolt,
 } from 'react-icons/fa';
+import CardTitle from '../../../../components/CardTitles/CardTitle';
 
 import { apiFetch } from '../../../../api/client';
 import { useAuth } from '../../../../context/auth/useAuth';
-import './CSS/GoalsChart.css';
+import './GoalsChart.css';
 
 type Goal = {
 	id: string;
@@ -127,13 +127,10 @@ const GoalsChart = ({ goals }: GoalsChartProps) => {
 
 	return (
 		<div className='goals-chart-card'>
-			<div className='chart-header'>
-				<h3 className='chart-title'>Spending Goals</h3>
-
-				<p className='chart-subtitle' aria-hidden='true'>
-					Monthly budget progress
-				</p>
-			</div>
+			<CardTitle
+				title='Spending Goals'
+				subtitle='Monthly budget progress'
+			/>
 
 			<div className='goals-chart-wrapper' aria-hidden='true'>
 				<ResponsiveContainer width='100%' height={320}>

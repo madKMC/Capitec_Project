@@ -9,6 +9,7 @@ import {
 	ResponsiveContainer,
 } from 'recharts';
 import './TrendChart.css';
+import CardTitle from '../../../../components/CardTitles/CardTitle';
 
 type Trend = {
 	month: string;
@@ -35,13 +36,11 @@ const TrendChart = ({ trends }: TrendChartProps) => {
 
 	return (
 		<div className='trend-chart-card'>
-			<div className='chart-header' aria-hidden='true'>
-				<h3 className='chart-title' id='trend-chart-title'>
-					Monthly Spending Trends
-				</h3>
-
-				<p className='chart-subtitle'>Last 12 months overview</p>
-			</div>
+			<CardTitle
+				aria-hidden='true'
+				title='Monthly Spending Trends'
+				subtitle='Last 12 months overview'
+			/>
 
 			{/* Screen reader data table */}
 			<table className='sr-only'>

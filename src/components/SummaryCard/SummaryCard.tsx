@@ -1,4 +1,4 @@
-import './CSS/SummaryCard.css';
+import './SummaryCard.css';
 
 const SummaryCard = ({
 	title,

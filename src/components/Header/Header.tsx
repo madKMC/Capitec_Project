@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/auth/useAuth';
 import { useTheme } from '../../context/theme/useTheme';
-import './CSS/Header.css';
+import './Header.css';
 
 const Header = () => {
 	const { user, logout } = useAuth();

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
-import './CSS/CategoryChart.css';
+import './CategoryChart.css';
+import CardTitle from '../../../../components/CardTitles/CardTitle';
 
 type Category = {
 	name: string;
@@ -31,7 +32,9 @@ const CategoryChart = ({ categories }: CategoryChartProps) => {
 
 	return (
 		<div className='category-chart-card'>
-			<h3 className='chart-title' id='category-chart-title'>Category Spending Breakdown</h3>
+			<CardTitle
+				title='Category Spending Breakdown'
+			/>
 
 			{/* Visually hidden data table for screen readers */}
 			<table className='sr-only' aria-labelledby='category-chart-title'>
