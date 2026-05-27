@@ -71,6 +71,10 @@ const TransactionsCard = ({
 		fetchTransactions();
 	}, [customerId, offset, selectedCategory, sortBy, selectedDateRange]);
 
+	useEffect(() => {
+		setOffset(0);
+	}, [selectedDateRange, selectedCategory, sortBy]);
+
 	return (
 		<div className='transactions-card'>
 			<CardTitle
