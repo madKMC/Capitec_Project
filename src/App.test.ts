@@ -37,11 +37,11 @@ it('renders Login when there is no authenticated user', () => {
 	).toBeInTheDocument();
 });
 
-vi.mock('./pages/Dashboard', () => ({
+vi.mock('./pages/Dashboard/Dashboard', () => ({
 	default: () => React.createElement('h1', null, 'Dashboard'),
 }));
 
-vi.mock('./pages/Profile', () => ({
+vi.mock('./pages/Profile/Profile', () => ({
 	default: () => React.createElement('div', null, 'Profile Page'),
 }));
 
