@@ -125,12 +125,18 @@ const GoalsChart = ({ goals }: GoalsChartProps) => {
 		}
 	};
 
+	if (goals.length === 0) {
+		return (
+			<div className='goals-chart-card'>
+				<CardTitle title='Budget Goals' />
+				<p className='empty-state'>No goals found for this period.</p>
+			</div>
+		);
+	}
+
 	return (
 		<div className='goals-chart-card'>
-			<CardTitle
-				title='Spending Goals'
-				subtitle='Monthly budget progress'
-			/>
+			<CardTitle title='Spending Goals' subtitle='Monthly budget progress' />
 
 			<div className='goals-chart-wrapper' aria-hidden='true'>
 				<ResponsiveContainer width='100%' height={320}>
@@ -234,7 +240,9 @@ const GoalsChart = ({ goals }: GoalsChartProps) => {
 								<Cell
 									key={entry.category}
 									fill={getStatusColor(entry.status)}
-									radius={entry.status === 'exceeded' ? [0, 8, 8, 0] : [0, 0, 0, 0]}
+									radius={
+										entry.status === 'exceeded' ? [0, 8, 8, 0] : [0, 0, 0, 0]
+									}
 								/>
 							))}
 						</Bar>

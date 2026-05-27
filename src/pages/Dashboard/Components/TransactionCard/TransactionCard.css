@@ -11,10 +11,20 @@
 
 .transactions-filters {
 	display: flex;
-	gap: 0.75rem;
+	flex-direction: row;
+	flex-wrap: wrap;
+	gap: 1rem;
+}
+
+@media (max-width: 600px) {
+	.transactions-filters {
+		flex-direction: column;
+	}
 }
 
 .transactions-filters select {
+	flex: 1;
+	min-width: 120px;
 	background: var(--panel);
 	border: 1px solid var(--border);
 	color: var(--text);

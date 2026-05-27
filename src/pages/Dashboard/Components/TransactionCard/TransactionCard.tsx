@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import './TransactionCard.css';
 import { apiFetch } from '../../../../api/client';
 import CardTitle from '../../../../components/CardTitles/CardTitle';
@@ -27,16 +27,6 @@ type DateRangePreset = {
 	value: string;
 };
 
-type TransactionsResponse = {
-	transactions: Transaction[];
-	pagination: {
-		total: number;
-		limit: number;
-		offset: number;
-		hasMore: boolean;
-	};
-};
-
 type FiltersResponse = {
 	categories: Category[];
 	dateRangePresets: DateRangePreset[];
@@ -44,42 +34,33 @@ type FiltersResponse = {
 
 type Props = {
 	customerId: string;
+	filterData: FiltersResponse | null;
+	selectedDateRange: string;
 };
 
-const TransactionsCard = ({ customerId }: Props) => {
+const TransactionsCard = ({
+	customerId,
+	filterData,
+	selectedDateRange,
+}: Props) => {
 	const [transactions, setTransactions] = useState<Transaction[]>([]);
-	const [categories, setCategories] = useState<Category[]>([]);
-	const [dateRanges, setDateRanges] = useState<DateRangePreset[]>([]);
 
 	const [loading, setLoading] = useState(true);
 	const [selectedCategory, setSelectedCategory] = useState<string>('All');
-	const [selectedRange, setSelectedRange] = useState<string>('30d');
+	const [sortBy, setSortBy] = useState<string>('date_desc');
 
 	const [offset, setOffset] = useState(0);
 	const [hasMore, setHasMore] = useState(false);
+
 	const limit = 20;
-
-	/* Fetch filters (categories + date presets) */
-	useEffect(() => {
-		const fetchFilters = async () => {
-			const data: FiltersResponse = await apiFetch(
-				`/api/customers/${customerId}/filters`,
-			);
-
-			setCategories(data.categories);
-			setDateRanges(data.dateRangePresets);
-		};
-
-		fetchFilters();
-	}, [customerId]);
 
 	/* Fetch transactions */
 	useEffect(() => {
 		const fetchTransactions = async () => {
 			setLoading(true);
 
-			const data: TransactionsResponse = await apiFetch(
-				`/api/customers/${customerId}/transactions?limit=${limit}&offset=${offset}&range=${selectedRange}`,
+			const data = await apiFetch(
+				`/api/customers/${customerId}/transactions?limit=${limit}&offset=${offset}&range=${selectedDateRange}&category=${selectedCategory === 'All' ? '' : selectedCategory}&sortBy=${sortBy}`,
 			);
 
 			setTransactions(data.transactions);
@@ -88,17 +69,7 @@ const TransactionsCard = ({ customerId }: Props) => {
 		};
 
 		fetchTransactions();
-	}, [customerId, offset, selectedRange]);
-
-	/* Filtering logic (client-side layer on top of API payload) */
-	const filteredTransactions = useMemo(() => {
-		return transactions.filter((txn) => {
-			const categoryMatch =
-				selectedCategory === 'All' || txn.category === selectedCategory;
-
-			return categoryMatch;
-		});
-	}, [transactions, selectedCategory]);
+	}, [customerId, offset, selectedCategory, sortBy, selectedDateRange]);
 
 	return (
 		<div className='transactions-card'>
@@ -122,7 +93,7 @@ const TransactionsCard = ({ customerId }: Props) => {
 					aria-label='Select transaction category'
 				>
 					<option value='All'>All Categories</option>
-					{categories.map((cat) => (
+					{filterData?.categories.map((cat) => (
 						<option key={cat.name} value={cat.name}>
 							{cat.name}
 						</option>
@@ -130,19 +101,14 @@ const TransactionsCard = ({ customerId }: Props) => {
 				</select>
 
 				<select
-					value={selectedRange}
-					onChange={(e) => {
-						setSelectedRange(e.target.value);
-						setOffset(0);
-					}}
-					id='date-range-select'
-					aria-label='Select date range for transactions'
+					value={sortBy}
+					onChange={(e) => setSortBy(e.target.value)}
+					aria-label='Sort transactions'
 				>
-					{dateRanges.map((range) => (
-						<option key={range.value} value={range.value}>
-							{range.label}
-						</option>
-					))}
+					<option value='date_desc'>Newest First</option>
+					<option value='date_asc'>Oldest First</option>
+					<option value='amount_desc'>Highest Amount</option>
+					<option value='amount_asc'>Lowest Amount</option>
 				</select>
 			</div>
 
@@ -156,8 +122,10 @@ const TransactionsCard = ({ customerId }: Props) => {
 					>
 						Loading dataset...
 					</div>
+				) : transactions.length === 0 ? (
+					<p className='empty-state'>No transactions found for this period.</p>
 				) : (
-					filteredTransactions.map((txn) => (
+					transactions.map((txn) => (
 						<div key={txn.id} className='transaction-row'>
 							<div
 								className='transaction-icon'

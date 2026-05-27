@@ -30,11 +30,18 @@ const CategoryChart = ({ categories }: CategoryChartProps) => {
 		[categories],
 	);
 
+	if (chartData.length === 0) {
+		return (
+			<div className='category-chart-card'>
+				<CardTitle title='Category Spending Breakdown' />
+				<p className='empty-state'>No category data for this period.</p>
+			</div>
+		);
+	}
+
 	return (
 		<div className='category-chart-card'>
-			<CardTitle
-				title='Category Spending Breakdown'
-			/>
+			<CardTitle title='Category Spending Breakdown' />
 
 			{/* Visually hidden data table for screen readers */}
 			<table className='sr-only' aria-labelledby='category-chart-title'>

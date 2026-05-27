@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
 	AreaChart,
 	Area,
@@ -22,29 +22,62 @@ type TrendChartProps = {
 	trends: Trend[];
 };
 
+const MONTH_OPTIONS = [1, 3, 6, 12];
+
 const TrendChart = ({ trends }: TrendChartProps) => {
-	const chartData = useMemo(
-		() =>
-			trends.map((trend) => ({
-				month: formatMonth(trend.month),
-				totalSpent: trend.totalSpent,
-				averageTransaction: trend.averageTransaction,
-				transactionCount: trend.transactionCount,
-			})),
-		[trends],
-	);
+	const [selectedMonths, setSelectedMonths] = useState(12);
+
+	const chartData = useMemo(() => {
+		return trends.slice(-selectedMonths).map((trend) => ({
+			month: formatMonth(trend.month),
+			totalSpent: trend.totalSpent,
+			averageTransaction: trend.averageTransaction,
+			transactionCount: trend.transactionCount,
+		}));
+	}, [trends, selectedMonths]);
+
+	if (chartData.length === 0) {
+		return (
+			<div className='trend-chart-card'>
+				<CardTitle title='Monthly Spending Trends' />
+				<p className='empty-state'>No trend data available for this range.</p>
+			</div>
+		);
+	}
 
 	return (
 		<div className='trend-chart-card'>
 			<CardTitle
 				aria-hidden='true'
 				title='Monthly Spending Trends'
-				subtitle='Last 12 months overview'
+				subtitle={`Last ${selectedMonths} months overview`}
 			/>
+			<div
+				className='trend-month-filter'
+				role='group'
+				aria-label='Select month range'
+			>
+				<div className='trend-month-filter'>
+					<label htmlFor='month-range' className='trend-month-label'>
+						{selectedMonths}M
+					</label>
+					<input
+						id='month-range'
+						type='range'
+						min={1}
+						max={12}
+						value={selectedMonths}
+						onChange={(e) => setSelectedMonths(Number(e.target.value))}
+						aria-label={`Show last ${selectedMonths} months`}
+					/>
+				</div>
+			</div>
 
 			{/* Screen reader data table */}
 			<table className='sr-only'>
-				<caption>Monthly spending trends for the last 12 months</caption>
+				<caption>
+					Monthly spending trends for the last {chartData.length} months
+				</caption>
 				<thead>
 					<tr>
 						<th scope='col'>Month</th>

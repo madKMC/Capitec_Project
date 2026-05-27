@@ -1,0 +1,35 @@
+.filter-button {
+	background: var(--surface);
+	color: var(--text);
+	border: 1px solid var(--border);
+	cursor: pointer;
+	padding: 0.5rem 0.75rem;
+	border-radius: 10px;
+	outline: none;
+	transition:
+		background 0.15s,
+		border-color 0.15s;
+}
+
+.filter-button:hover {
+	background: var(--surface-hover);
+	border-color: var(--accent);
+}
+
+.filter-button--active {
+	background: var(--accent);
+	color: var(--on-accent);
+	border-color: var(--accent);
+}
+
+.filter-button:focus-visible {
+	outline: 2px solid var(--focus-ring);
+	outline-offset: 2px;
+}
+
+/* Active/selected state */
+.filter-button[aria-pressed='true'] {
+	background: var(--accent);
+	color: var(--on-accent);
+	border-color: var(--accent);
+}

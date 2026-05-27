@@ -10,6 +10,9 @@ interface User {
 	currency: string;
 }
 
+const periodToDays = (period: string) =>
+	({ '7d': 7, '30d': 30, '90d': 90, '1y': 365 })[period] ?? 30;
+
 const users: Record<string, User> = {
 	alice: {
 		customerId: '1',
@@ -890,16 +893,60 @@ export const handlers = [
 		if (!user) {
 			return HttpResponse.json({ message: 'Not found' }, { status: 404 });
 		}
+		const cutoff = new Date(Date.now() - periodToDays(period) * 86400000);
+		const filtered = allTransactions.filter((t) => new Date(t.date) >= cutoff);
+		const totalSpent = filtered.reduce((s, t) => s + t.amount, 0);
+		const categoryTotals = new Map<string, number>();
+		for (const t of filtered)
+			categoryTotals.set(
+				t.category,
+				(categoryTotals.get(t.category) ?? 0) + t.amount,
+			);
+		const topCategory =
+			[...categoryTotals.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ??
+			'N/A';
+		const days = periodToDays(period);
+		const now = new Date();
+		const currentCutoff = new Date(now.getTime() - days * 86400000);
+		const previousCutoff = new Date(now.getTime() - days * 2 * 86400000);
+
+		const currentFiltered = allTransactions.filter(
+			(t) => new Date(t.date) >= currentCutoff,
+		);
+		const previousFiltered = allTransactions.filter((t) => {
+			const d = new Date(t.date);
+			return d >= previousCutoff && d < currentCutoff;
+		});
+
+		const currentSpent = currentFiltered.reduce((s, t) => s + t.amount, 0);
+		const previousSpent = previousFiltered.reduce((s, t) => s + t.amount, 0);
+
+		const spentChange =
+			previousSpent === 0
+				? 0
+				: parseFloat(
+						(((currentSpent - previousSpent) / previousSpent) * 100).toFixed(1),
+					);
+
+		const currentCount = currentFiltered.length;
+		const previousCount = previousFiltered.length;
+
+		const transactionChange =
+			previousCount === 0
+				? 0
+				: parseFloat(
+						(((currentCount - previousCount) / previousCount) * 100).toFixed(1),
+					);
+
 		return HttpResponse.json({
-			period: period,
-			totalSpent: 4250.75,
-			transactionCount: 47,
-			averageTransaction: 90.44,
-			topCategory: 'Groceries',
-			comparedToPrevious: {
-				spentChange: 12.5,
-				transactionChange: -3.2,
-			},
+			period,
+			totalSpent: parseFloat(totalSpent.toFixed(2)),
+			transactionCount: filtered.length,
+			averageTransaction: parseFloat(
+				(totalSpent / (filtered.length || 1)).toFixed(2),
+			),
+			topCategory,
+			comparedToPrevious: { spentChange, transactionChange },
 		});
 	}),
 
@@ -911,67 +958,56 @@ export const handlers = [
 		if (!username) {
 			return HttpResponse.json({ message: 'Unauthorized' }, { status: 401 });
 		}
-		const user = users[username];
-		if (!user) {
-			return HttpResponse.json({ message: 'Not found' }, { status: 404 });
-		}
-		return HttpResponse.json({
-			dateRange: {
-				startDate: '2024-08-16',
-				endDate: '2024-09-16',
-			},
-			totalAmount: 4250.75,
-			categories: [
-				{
-					name: 'Groceries',
-					amount: 1250.3,
-					percentage: 29.4,
-					transactionCount: 15,
-					color: '#FF6B6B',
-					icon: 'shopping-cart',
-				},
-				{
-					name: 'Entertainment',
-					amount: 890.2,
-					percentage: 20.9,
-					transactionCount: 8,
-					color: '#4ECDC4',
-					icon: 'film',
-				},
-				{
-					name: 'Transportation',
-					amount: 680.45,
-					percentage: 16.0,
-					transactionCount: 12,
-					color: '#45B7D1',
-					icon: 'car',
-				},
-				{
-					name: 'Dining',
-					amount: 520.3,
-					percentage: 12.2,
-					transactionCount: 9,
-					color: '#F7DC6F',
-					icon: 'utensils',
-				},
-				{
-					name: 'Shopping',
-					amount: 450.8,
-					percentage: 10.6,
-					transactionCount: 6,
-					color: '#BB8FCE',
-					icon: 'shopping-bag',
-				},
-				{
-					name: 'Utilities',
-					amount: 458.7,
-					percentage: 10.8,
-					transactionCount: 3,
-					color: '#85C1E9',
-					icon: 'zap',
-				},
-			],
+
+		const url = new URL(request.url);
+		const period = url.searchParams.get('period') ?? '30d';
+		const startDateParam = url.searchParams.get('startDate');
+		const endDateParam = url.searchParams.get('endDate');
+
+		const cutoff = startDateParam
+			? new Date(startDateParam)
+			: new Date(Date.now() - periodToDays(period) * 86400000);
+		const end = endDateParam ? new Date(endDateParam) : new Date();
+
+		const filtered = allTransactions.filter((txn) => {
+			const d = new Date(txn.date);
+			return d >= cutoff && d <= end;
 		});
+
+		const totalAmount = filtered.reduce((sum, t) => sum + t.amount, 0);
+
+		// Group by category
+		const categoryMap = new Map<
+			string,
+			{ amount: number; count: number; color: string; icon: string }
+		>();
+		for (const txn of filtered) {
+			const existing = categoryMap.get(txn.category);
+			if (existing) {
+				existing.amount += txn.amount;
+				existing.count += 1;
+			} else {
+				categoryMap.set(txn.category, {
+					amount: txn.amount,
+					count: 1,
+					color: txn.categoryColor,
+					icon: txn.icon,
+				});
+			}
+		}
+
+		const categories = Array.from(categoryMap.entries()).map(
+			([name, data]) => ({
+				name,
+				amount: parseFloat(data.amount.toFixed(2)),
+				percentage: parseFloat(((data.amount / totalAmount) * 100).toFixed(1)),
+				transactionCount: data.count,
+				color: data.color,
+				icon: data.icon,
+			}),
+		);
+
+		return HttpResponse.json({ totalAmount, categories });
 	}),
 
 	/* Monthly Spending Trends */
@@ -986,82 +1022,40 @@ export const handlers = [
 		if (!user) {
 			return HttpResponse.json({ message: 'Not found' }, { status: 404 });
 		}
-		return HttpResponse.json({
-			trends: [
-				{
-					month: '2025-06',
-					totalSpent: 3210.19,
-					transactionCount: 5,
-					averageTransaction: 642.04,
-				},
-				{
-					month: '2025-07',
-					totalSpent: 2860.9,
-					transactionCount: 5,
-					averageTransaction: 572.18,
-				},
-				{
-					month: '2025-08',
-					totalSpent: 3830.1,
-					transactionCount: 5,
-					averageTransaction: 766.02,
-				},
-				{
-					month: '2025-09',
-					totalSpent: 1742.8,
-					transactionCount: 5,
-					averageTransaction: 348.56,
-				},
-				{
-					month: '2025-10',
-					totalSpent: 2009.3,
-					transactionCount: 5,
-					averageTransaction: 401.86,
-				},
-				{
-					month: '2025-11',
-					totalSpent: 2246.79,
-					transactionCount: 5,
-					averageTransaction: 449.36,
-				},
-				{
-					month: '2025-12',
-					totalSpent: 3220.7,
-					transactionCount: 7,
-					averageTransaction: 460.1,
-				},
-				{
-					month: '2026-01',
-					totalSpent: 2928.2,
-					transactionCount: 6,
-					averageTransaction: 488.03,
-				},
-				{
-					month: '2026-02',
-					totalSpent: 3057.7,
-					transactionCount: 7,
-					averageTransaction: 436.81,
-				},
-				{
-					month: '2026-03',
-					totalSpent: 2832.8,
-					transactionCount: 6,
-					averageTransaction: 472.13,
-				},
-				{
-					month: '2026-04',
-					totalSpent: 2730.29,
-					transactionCount: 6,
-					averageTransaction: 455.05,
-				},
-				{
-					month: '2026-05',
-					totalSpent: 844.0,
-					transactionCount: 4,
-					averageTransaction: 211.0,
-				},
-			],
-		});
+		const months = Math.min(
+			Number(new URL(request.url).searchParams.get('months') ?? '12'),
+			24,
+		);
+
+		// Build a map of year-month → aggregated data
+		const monthMap = new Map<
+			string,
+			{ totalSpent: number; transactionCount: number }
+		>();
+		for (const txn of allTransactions) {
+			const key = txn.date.slice(0, 7); // 'YYYY-MM'
+			const existing = monthMap.get(key);
+			if (existing) {
+				existing.totalSpent += txn.amount;
+				existing.transactionCount += 1;
+			} else {
+				monthMap.set(key, { totalSpent: txn.amount, transactionCount: 1 });
+			}
+		}
+
+		const sorted = Array.from(monthMap.entries())
+			.sort(([a], [b]) => a.localeCompare(b))
+			.slice(-months)
+			.map(([month, data]) => ({
+				month,
+				totalSpent: parseFloat(data.totalSpent.toFixed(2)),
+				transactionCount: data.transactionCount,
+				averageTransaction: parseFloat(
+					(data.totalSpent / data.transactionCount).toFixed(2),
+				),
+			}));
+
+		return HttpResponse.json({ trends: sorted });
 	}),
 
 	/* Transactions with Filtering */
@@ -1078,22 +1072,42 @@ export const handlers = [
 		}
 
 		const url = new URL(request.url);
-		const range = url.searchParams.get('range') ?? '30d';
+		const limit = Math.min(Number(url.searchParams.get('limit') ?? '20'), 100);
 		const offset = Number(url.searchParams.get('offset') ?? '0');
-		const limit = Number(url.searchParams.get('limit') ?? '20');
+		const category = url.searchParams.get('category');
+		const startDate = url.searchParams.get('startDate');
+		const endDate = url.searchParams.get('endDate');
+		const range = url.searchParams.get('range');
+		const sortBy = url.searchParams.get('sortBy') ?? 'date_desc';
 
-		const rangeDays: Record<string, number> = {
-			'7d': 7,
-			'30d': 30,
-			'90d': 90,
-			'1y': 365,
+		const cutoff = startDate
+			? new Date(startDate)
+			: range
+				? new Date(Date.now() - periodToDays(range) * 86400000)
+				: new Date(0);
+		const end = endDate ? new Date(endDate) : new Date();
+
+		let filtered = allTransactions.filter((txn) => {
+			const d = new Date(txn.date);
+			const dateMatch = d >= cutoff && d <= end;
+			const categoryMatch =
+				!category || category === 'All' || txn.category === category;
+			return dateMatch && categoryMatch;
+		});
+
+		const sorters: Record<
+			string,
+			(a: (typeof filtered)[0], b: (typeof filtered)[0]) => number
+		> = {
+			date_desc: (a, b) =>
+				new Date(b.date).getTime() - new Date(a.date).getTime(),
+			date_asc: (a, b) =>
+				new Date(a.date).getTime() - new Date(b.date).getTime(),
+			amount_desc: (a, b) => b.amount - a.amount,
+			amount_asc: (a, b) => a.amount - b.amount,
 		};
-		const days = rangeDays[range] ?? 30;
-		const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+		filtered = filtered.sort(sorters[sortBy] ?? sorters.date_desc);
 
-		const filtered = allTransactions.filter(
-			(txn) => new Date(txn.date) >= cutoff,
-		);
 		const page = filtered.slice(offset, offset + limit);
 
 		return HttpResponse.json({
@@ -1157,7 +1171,6 @@ export const handlers = [
 					daysRemaining: 12,
 					status: 'on_track',
 				},
-
 			],
 		});
 	}),

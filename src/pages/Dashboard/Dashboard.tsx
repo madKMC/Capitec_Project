@@ -7,6 +7,7 @@ import CategoryChart from './Components/CategoryChart/CategoryChart';
 import TrendChart from './Components/TrendChart/TrendChart';
 import GoalsChart from './Components/GoalsChart/GoalsChart';
 import TransactionsCard from './Components/TransactionCard/TransactionCard';
+import FilterButton from '../../components/FilterButton/FilterButton';
 
 interface SpendingSummary {
 	period: string;
@@ -50,6 +51,16 @@ type Goal = {
 	daysRemaining: number;
 };
 
+type DateRangePreset = {
+	label: string;
+	value: string;
+};
+
+type FiltersResponse = {
+	categories: Category[];
+	dateRangePresets: DateRangePreset[];
+};
+
 const Dashboard = () => {
 	const { user } = useAuth();
 
@@ -57,8 +68,10 @@ const Dashboard = () => {
 	const [goals, setGoals] = useState<Goal[] | null>(null);
 	const [categories, setCategories] = useState<Category[] | null>(null);
 	const [trends, setTrends] = useState<Trend[] | null>(null);
+	const [filterData, setFilterData] = useState<FiltersResponse | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
+	const [selectedDateRange, setSelectedDateRange] = useState<string>('30d');
 
 	useEffect(() => {
 		if (!user) return;
@@ -72,23 +85,28 @@ const Dashboard = () => {
 			setLoading(true);
 			try {
 				const summaryData = await apiFetch(
-					`/api/customers/${customerId}/spending/summary`,
+					`/api/customers/${customerId}/spending/summary?period=${selectedDateRange}`,
 				);
 				const categoryData = await apiFetch(
-					`/api/customers/${customerId}/spending/categories?`,
+					`/api/customers/${customerId}/spending/categories?period=${selectedDateRange}`,
 				);
+
+				const goalsData = await apiFetch(`/api/customers/${customerId}/goals`);
 
 				const trendsData = await apiFetch(
 					`/api/customers/${customerId}/spending/trends`,
 				);
 
-				const goalsData = await apiFetch(`/api/customers/${customerId}/goals`);
+				const filterData: FiltersResponse = await apiFetch(
+					`/api/customers/${customerId}/filters`,
+				);
 
 				if (mounted) {
 					setSummary(summaryData);
 					setCategories(categoryData.categories);
 					setTrends(trendsData.trends);
 					setGoals(goalsData.goals);
+					setFilterData(filterData);
 				}
 			} catch (err: unknown) {
 				if (mounted) {
@@ -108,27 +126,45 @@ const Dashboard = () => {
 		return () => {
 			mounted = false;
 		};
-	}, [user]);
+	}, [user, selectedDateRange]);
 
 	return (
 		<main className='dashboard'>
-			{loading && (
-				<div className='state' role='status' aria-live='polite'>Loading financial insight overview...</div>
+			{loading && !summary && (
+				<div className='state' role='status' aria-live='polite'>
+					Loading financial insight overview...
+				</div>
 			)}
 
-			{error && <div className='state error' role='alert'>Error: {error}</div>}
+			{error && (
+				<div className='state error' role='alert'>
+					Error: {error}
+				</div>
+			)}
 
 			{summary && (
 				<>
-					<h2 className='dashboard-title'>
-						Spending Summary ({summary.period})
-					</h2>
+					<div className='filter-button-wrapper'>
+						{filterData?.dateRangePresets.map((preset) => (
+							<FilterButton
+								key={preset.value}
+								filter={preset}
+								isActive={selectedDateRange === preset.value}
+								onSelect={() => setSelectedDateRange(preset.value)}
+							/>
+						))}
+					</div>
 
-					<section className='summary-grid' aria-label="Spending summary">
-						<SummaryCard title='Total Spent' value={`R${summary.totalSpent}`} />
+					<section className='summary-grid' aria-label='Spending summary'>
+						<SummaryCard
+							title='Total Spent'
+							value={`R${summary.totalSpent}`}
+							change={summary.comparedToPrevious.spentChange}
+						/>
 						<SummaryCard
 							title='Transactions'
 							value={summary.transactionCount}
+							change={summary.comparedToPrevious.transactionChange}
 						/>
 						<SummaryCard title='Top Category' value={summary.topCategory} />
 						<SummaryCard
@@ -136,17 +172,26 @@ const Dashboard = () => {
 							value={`R${summary.averageTransaction}`}
 						/>
 					</section>
-					<section className='chart-section' aria-label="Charts and transactions">
+					<section
+						className='chart-section'
+						aria-label='Charts and transactions'
+					>
 						{categories && <CategoryChart categories={categories} />}
-						{trends && <TrendChart trends={trends} />}
 						{goals && <GoalsChart goals={goals} />}
-						<TransactionsCard customerId={user?.customerId ?? '12345'} />
+						{trends && <TrendChart trends={trends} />}
+						<TransactionsCard
+							customerId={user?.customerId ?? '12345'}
+							filterData={filterData}
+							selectedDateRange={selectedDateRange}
+						/>
 					</section>
 				</>
 			)}
 
 			{!loading && !summary && !error && (
-				<div className='state' role='status' aria-live='polite'>No financial data available.</div>
+				<div className='state' role='status' aria-live='polite'>
+					No financial data available.
+				</div>
 			)}
 		</main>
 	);

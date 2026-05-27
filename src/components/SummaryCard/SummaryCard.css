@@ -1,5 +1,5 @@
 .summary-card {
-	background: linear-gradient(180deg, var(--summary-card-bg-start), var(--summary-card-bg-end));
+	background: var(--panel);
 	border: 1px solid var(--border);
 	border-radius: 14px;
 
@@ -19,7 +19,7 @@
 .summary-card:hover {
 	transform: translateY(-2px);
 	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-	border-color: var(--border-hover);
+	border-color: var(--accent);
 }
 
 .summary-card h3 {
@@ -36,4 +36,10 @@
 	color: var(--text);
 	margin: 0;
 	word-break: break-word;
+}
+
+.summary-card-change {
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin: 0;
 }
