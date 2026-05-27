@@ -22,8 +22,6 @@ type TrendChartProps = {
 	trends: Trend[];
 };
 
-const MONTH_OPTIONS = [1, 3, 6, 12];
-
 const TrendChart = ({ trends }: TrendChartProps) => {
 	const [selectedMonths, setSelectedMonths] = useState(12);
 
