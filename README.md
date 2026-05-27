@@ -1,6 +1,6 @@
-# Capitec_Project
+# Capitec Project
 
-A responsive financial analytics dashboard to display a customer's spending data (mocked data).
+Responsive financial analytics dashboard built to visualise customer spending trends using mocked financial data.
 
 ## Tech stack
 
@@ -14,10 +14,15 @@ A responsive financial analytics dashboard to display a customer's spending data
 - **CSS Custom Properties** — full theming system (dark default, light variant)
 - **Docker** — Dockerfile and `compose.yaml` for containerised development
 
+## Assumptions
+
+- Authentication is mocked and does not represent production-grade security.
+- Financial values are illustrative only and generated from mock datasets.
+
 ## Features implemented
 
 - **Multi-user login** — select from three mock accounts (Alice Smith, Bob Jones, John Doe); no password required
-- **JWT-based auth flow** — token and user stored in `localStorage`; token re-validated against the mock profile endpoint on page load
+- **Mock token-based auth flow** — token and user stored in `localStorage`; token re-validated against the mock profile endpoint on page load
 - **Dark / light theme toggle** — respects `prefers-color-scheme` on first visit; persists user preference to `localStorage`
 - **Spending summary cards** — Total Spent, Transaction Count, Top Category, and Average Transaction; each card shows a period-over-period percentage change indicator
 - **Date range filter** — preset buttons (7d, 30d, 90d, 1y) that re-fetch and update all summary and category data simultaneously
@@ -28,7 +33,7 @@ A responsive financial analytics dashboard to display a customer's spending data
 - **Profile page** — displays logged-in user's account details
 - **Responsive layout** — grid collapses to single-column on mobile; filter controls wrap on small screens
 
-## Key decisions & Tradeoffs
+## Architectural decisions & Tradeoffs
 
 - **MSW for all data** — avoids a real backend entirely. All handlers live in `src/mocks/handlers.tsx` and compute responses dynamically from a shared `allTransactions` array (70 transactions spanning ~13 months), so date range filtering produces realistic, varied results rather than static snapshots.
 - **Context API over a state management library** — `AuthContext` and `ThemeContext` are sufficient at this scale; adding Redux or Zustand would be over-engineering for two pieces of global state.
@@ -51,43 +56,69 @@ A responsive financial analytics dashboard to display a customer's spending data
 
 Tests are written with **Vitest** and **React Testing Library**.
 
-- App.test.ts — routing: loading state, unauthenticated view, authenticated routes
-- auth.test.ts — logout helper
-- client.test.ts — apiFetch: headers, error handling, 204 responses
-- src/context/auth/
-  - AuthProvider.test.tsx — token restore, login, logout, invalid-token clear
-  - useAuth.test.ts — hook throws outside provider
-- src/context/theme/
-  - ThemeProvider.test.tsx — theme toggle, localStorage persistence, system preference
-  - useTheme.test.ts — hook throws outside provider
-- setup.ts — jest-dom matchers + ResizeObserver polyfill (required by Recharts)
+### Authentication
 
-Run all tests:
+- Login flow
+- Logout behaviour
+- Token restore from localStorage
+- Invalid token handling
+
+### API Layer
+
+- Authorization headers
+- Error handling
+- 204 responses
+
+### Theme System
+
+- Theme toggling
+- localStorage persistence
+- System preference detection
+
+### Routing
+
+- Authenticated vs unauthenticated routes
+- Loading states
+
+### Run Tests
 
 ```bash
-npm test          # watch mode
-npm run test:run  # single pass
-npm run test:ui   # Vitest UI
+npm test              # watch mode
+npm run test:run      # single pass (CI)
+npm run test:ui       # interactive UI
+```
 
 ## Running the project
 
 Local (Node)
+
+```bash
 npm install
 npm run dev
+```
 
 The app is served at http://localhost:5173. MSW registers its service worker automatically in development.
 
 Docker
-docker compose up
 
-This builds the image and mounts the project directory as a volume, so file changes are reflected without rebuilding.
+```bash
+docker compose up
+```
+
+This builds the image and mounts the project directory as a volume, so file changes are reflected without rebuilding. Runs at http://localhost:5173.
+Ensure Docker Desktop is installed and running for local docker images.
 
 ## Environment Variables
 
+Leave empty to use MSW (default). Set to a real base URL when connecting to a backend.
+
+```
 VITE_API_URL=
+```
 
 ## Folder Structure
 
+```
 src/
   api/              # apiFetch client wrapper and auth helper
   components/       # Shared UI — Header, SummaryCard, FilterButton, CardTitle
@@ -103,17 +134,17 @@ src/
     Profile/        # User profile page
 Tests/
   setup.ts          # Global test setup (jest-dom, ResizeObserver polyfill)
+```
 
 ## Known Limitations
 
-- Goals data is static, it returns hard coded values from handler.ts.
-- Mock data needs to be adjusted whenever viewing the dashboard, as last 7 days may contain no data if not updated.
+- Goals data is static — the handler returns hard coded values and does not respond to date range filters.
+- The 7-day filter may return no results — mock transaction dates are fixed and will fall outside the rolling 7-day window over time.
 
 ## Future Improvements
-```
+
 - Update mock data to be offset from current date, keeping mock data consistent.
 - Compute goals data dynamically for current time period, but update it against actual transactions.
-- Adding more testing, limited testing currently happening.
-  - Current testing does not take into consideration components and pages.
-- Add a custom date range picker instead of preset buttons (Only kept as buttons, due to example on mock data given)
+- Expand component and page-level testing coverage.
+- Add a custom date range picker as an alternative to the fixed preset buttons.
 - Replace Mock Service Worker with a real API and database.
